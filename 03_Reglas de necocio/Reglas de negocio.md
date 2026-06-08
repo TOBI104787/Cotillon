@@ -11,10 +11,10 @@ Se lleva un registro de la cantidad en stock de cada producto.
 No se venden productos sin stock. 
 Dar de baja un producto cuando deja de existir a nivel comercial. 
 No registrar productos sin nombre o sin precio. 
-No registrar ventas con cantidades menores o iguales a cero.
+No registrar ventas con cantidades de stock menores o iguales a cero.
 
 **Acciones disparadoras:** 
-Si se alcanza el stock mínimo de un producto se da una alerta. 
+Si se alcanza el stock mínimo de seguridad se dara una alerta la proxima vez que se abra el sistema. 
 Cuando finaliza el día, generar un reporte de ventas diarias. 
 Cuando se registra una venta, se actualiza automáticamente el stock.
 

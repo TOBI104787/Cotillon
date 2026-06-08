@@ -14,12 +14,10 @@ No registrar productos sin nombre o sin precio.
 No registrar ventas con cantidades de stock menores o iguales a cero.
 
 **Acciones disparadoras:** 
-Si se alcanza el stock mínimo de seguridad se dara una alerta la proxima vez que se abra el sistema. 
-Cuando finaliza el día, generar un reporte de ventas diarias. 
-Cuando se registra una venta, se actualiza automáticamente el stock.
+Si se alcanza el stock mínimo de seguridad se dara una alerta la proxima vez que se abra el sistema.  
 
 **Cálculos:** 
-El total de la venta se calcula sumando los precios de los productos vendidos.
+El precio total de la venta se calcula sumando los precios de los productos vendidos multiplicado por las unidades de dichos productos.
 El resumen financiero se calcula con ingresos menos egresos. 
 El total de ingresos diarios se calcula sumando todas las ventas realizadas en el día.
 

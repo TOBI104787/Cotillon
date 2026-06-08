@@ -22,5 +22,4 @@ El resumen financiero se calcula con ingresos menos egresos.
 El total de ingresos diarios se calcula sumando todas las ventas realizadas en el día.
 
 **Inferencias:** 
-Si los gastos superan los ingresos, el negocio presenta pérdidas. 
-
+Si los gastos superan los ingresos, el negocio es deficitario. 

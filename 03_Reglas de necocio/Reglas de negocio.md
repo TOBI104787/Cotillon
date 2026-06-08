@@ -8,7 +8,7 @@ Cada pago de una venta se paga con un metodo de pago.
 Se lleva un registro de la cantidad en stock de cada producto.
 
 **Restricciones:** 
-No vender productos sin stock. 
+No se venden productos sin stock. 
 Dar de baja lógica un producto cuando deja de existir a nivel comercial. 
 No registrar productos sin nombre o sin precio. 
 No registrar ventas con cantidades menores o iguales a cero.

@@ -2,8 +2,8 @@
 
 **Hechos:** 
 Cada producto pertenece a una categoría. 
-Toda venta tiene una fecha registrada. 
-Toda compra tiene una fecha registrada 
+Toda venta tiene una fecha de venta registrada. 
+Toda compra tiene una fecha de compra registrada 
 Cada venta debe estar asociada a un método de pago. 
 Cada producto cuenta con una cantidad disponible en stock.
 

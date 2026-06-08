@@ -5,7 +5,7 @@ Cada producto pertenece a una categoría.
 Toda venta tiene una fecha de venta registrada. 
 Toda compra tiene una fecha de compra registrada 
 Cada pago de una venta se paga con un metodo de pago. 
-Cada producto cuenta con una cantidad disponible en stock.
+Se lleva un registro de la cantidad en stock de cada producto.
 
 **Restricciones:** 
 No vender productos sin stock. 

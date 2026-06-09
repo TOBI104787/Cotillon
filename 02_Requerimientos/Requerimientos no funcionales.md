@@ -1,4 +1,4 @@
-#**El sistema deberá:**
+# **El sistema deberá:**
 
 1. El sistema debe tener una interfaz sencilla de usar.
 2. El tiempo de respuesta del sistema debe ser de menos de 1 segundo.

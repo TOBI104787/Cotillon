@@ -1,4 +1,4 @@
-#**El sistema deberá**:
+#**El sistema deberá:**
 
 1. Registrar productos. 
 2. Modificar y eliminar productos existentes.

@@ -1,11 +1,11 @@
 # **Reglas de negocio:**
 
 ## **Hechos:** 
-1. Cada producto pertenece a una categoría.
-2. Toda venta tiene una fecha de venta registrada.
-3. Toda compra tiene una fecha de compra registrada.
-4. Cada pago de una venta se paga con un metodo de pago.
-5. Se lleva un registro de la cantidad en stock de cada producto.
+1.Cada producto pertenece a una categoría.
+2.Toda venta tiene una fecha de venta registrada.
+3.Toda compra tiene una fecha de compra registrada.
+4.Cada pago de una venta se paga con un metodo de pago.
+5.Se lleva un registro de la cantidad en stock de cada producto.
 
 ## **Restricciones:** 
 1. No se venden productos sin stock. 

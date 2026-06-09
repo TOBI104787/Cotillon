@@ -1,4 +1,4 @@
-**Reglas de negocio:**
+# **Reglas de negocio:**
 
 **Hechos:** 
 Cada producto pertenece a una categoría. 

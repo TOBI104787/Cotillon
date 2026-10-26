@@ -4,7 +4,7 @@
 Modificar producto
 
 ## Actor
-Usuario del sistema
+Empleado o responsable del negocio.
 
 ## Objetivo
 Permitir al usuario modificar la información de un producto que ya se encuentra registrado en el sistema, para mantener actualizados sus datos.
@@ -13,20 +13,17 @@ Permitir al usuario modificar la información de un producto que ya se encuentra
 - El usuario debe tener acceso al sistema.
 - El producto que se desea modificar debe estar registrado.
 
-## Postcondiciones
-- El producto queda actualizado con la nueva información ingresada.
-- Los cambios quedan guardados en el sistema.
-
 ## Flujo principal
 1. El usuario selecciona la opción **"Modificar producto"**.
 2. El sistema solicita seleccionar o buscar el producto que desea modificar.
-3. El usuario selecciona el producto.
-4. El sistema muestra la información actual del producto.
-5. El usuario modifica los datos que necesita actualizar.
-6. El sistema verifica que los datos ingresados sean válidos.
-7. El usuario confirma los cambios.
-8. El sistema guarda la información modificada.
-9. El sistema informa al usuario que el producto fue modificado correctamente.
+3. El usuario busca el producto por su nombre.
+4. El usuario selecciona el producto.
+5. El sistema muestra la información actual del producto.
+6. El usuario modifica los datos que necesita actualizar.
+7. El sistema verifica que los datos ingresados sean válidos.
+8. El usuario confirma los cambios.
+9. El sistema guarda los datos modificados.
+10. El sistema informa al usuario que el producto fue modificado correctamente.
 
 ## Flujos alternativos
 
@@ -72,6 +69,10 @@ Permitir al usuario modificar la información de un producto que ya se encuentra
 - Cada producto debe pertenecer a una categoría.
 - No se permite establecer un precio igual o menor a cero.
 - El producto debe existir en el sistema para poder ser modificado.
+- 
+## Postcondiciones
+- El producto queda actualizado con la nueva información ingresada.
+- Los cambios quedan guardados en el sistema.
 
 ## Resultado esperado
 El producto seleccionado queda actualizado con los nuevos datos y la información modificada se guarda correctamente en el sistema.

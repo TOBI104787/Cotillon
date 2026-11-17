@@ -1,4 +1,4 @@
-# Clases y funciones definidas — Sistema de Gestión para un Cotillón
+# Clases y funciones definidas — Sistema de Gestión para Cotillón
 
 **Lenguaje:** Python  
 **Paradigma:** Programación Orientada a Objetos (POO)  

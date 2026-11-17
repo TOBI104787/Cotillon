@@ -1,0 +1,271 @@
+@startuml
+title Sistema de Gestion para un Cotillon - Diagrama de Clases (POO)
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+hide circle
+
+package "Presentacion - Boundary" {
+  class PantallaMenu <<boundary>>
+  class PantallaProducto <<boundary>> {
+    +mostrar_formulario()
+    +mostrar_productos(productos)
+    +mostrar_errores(errores)
+    +solicitar_confirmacion()
+  }
+  class PantallaVenta <<boundary>> {
+    +mostrar_carrito(venta)
+    +mostrar_total(total)
+    +solicitar_confirmacion()
+  }
+  class PantallaGastos <<boundary>> {
+    +mostrar_gastos(gastos)
+    +mostrar_formulario()
+  }
+}
+
+package "Aplicacion - Control" {
+  class ControladorAutenticacion <<control>> {
+    +iniciar_sesion(nombre_usuario: str, contrasena: str): Usuario
+    +cerrar_sesion(): void
+    +verificar_permiso(usuario: Usuario, accion: str): bool
+  }
+
+  class ControladorProducto <<control>> {
+    +registrar_producto(datos: dict): Producto
+    +buscar_producto(nombre: str): list
+    +modificar_producto(id_producto: int, cambios: dict): Producto
+    +eliminar_producto(id_producto: int): bool
+  }
+
+  class ControladorCategoria <<control>> {
+    +registrar_categoria(datos: dict): Categoria
+    +buscar_categoria(nombre: str): list
+    +modificar_categoria(id_categoria: int, cambios: dict): Categoria
+    +eliminar_categoria(id_categoria: int): bool
+  }
+
+  class ControladorVenta <<control>> {
+    +crear_venta(usuario: Usuario): Venta
+    +agregar_producto(venta: Venta, id_producto: int, cantidad: int): void
+    +quitar_producto(venta: Venta, id_producto: int): void
+    +calcular_total(venta: Venta): Decimal
+    +confirmar_venta(venta: Venta): Venta
+    +consultar_ventas(desde: date, hasta: date): list
+  }
+
+  class ControladorGasto <<control>> {
+    +registrar_gasto(datos: dict): Gasto
+    +consultar_gastos(desde: date, hasta: date): list
+  }
+
+  class ControladorReporte <<control>> {
+    +generar_resumen(desde: date, hasta: date): ReporteResumen
+    +generar_reporte_ventas(desde: date, hasta: date): list
+  }
+}
+
+package "Dominio - Entidades" {
+  abstract class Usuario <<entity>> {
+    -dni: str
+    -nombre: str
+    -apellido: str
+    -correo_electronico: str
+    -telefono: str
+    -nombre_de_usuario: str
+    -contrasena_hash: str
+    +obtener_nombre_completo(): str
+    +actualizar_datos(cambios: dict): void
+    +validar_credenciales(contrasena: str): bool
+  }
+
+  class AdministradorSistema <<entity>> {
+    +puede_administrar_usuarios(): bool
+    +puede_modificar_productos(): bool
+    +puede_eliminar_productos(): bool
+  }
+
+  class TrabajadorNegocio <<entity>> {
+    +puede_registrar_ventas(): bool
+    +puede_consultar_productos(): bool
+  }
+
+  class Negocio <<entity>> {
+    -cuit: str
+    -nombre: str
+    -direccion: str
+    -clave_de_acceso_hash: str
+    +modificar_datos(cambios: dict): void
+    +obtener_datos(): dict
+  }
+
+  class Provincia <<entity>> {
+    -nombre: str
+  }
+
+  class Localidad <<entity>> {
+    -nombre: str
+  }
+
+  class Categoria <<entity>> {
+    -id_categoria: int
+    -nombre: str
+    -imagen: bytes
+    +modificar_datos(cambios: dict): void
+  }
+
+  class Producto <<entity>> {
+    -id_producto: int
+    -nombre: str
+    -precio: Decimal
+    -stock: int
+    -stock_minimo: int
+    -imagen: bytes
+    -activo: bool
+    +modificar_datos(cambios: dict): void
+    +validar_datos(): bool
+    +hay_stock(cantidad: int): bool
+    +disminuir_stock(cantidad: int): void
+    +aumentar_stock(cantidad: int): void
+    +obtener_estado_stock(): str
+  }
+
+  class Venta <<entity>> {
+    -id_venta: int
+    -fecha: datetime
+    -total: Decimal
+    +agregar_detalle(detalle: DetalleVenta): void
+    +quitar_detalle(detalle: DetalleVenta): void
+    +calcular_total(): Decimal
+    +validar(): bool
+  }
+
+  class DetalleVenta <<entity>> {
+    -id_detalle: int
+    -cantidad: int
+    -precio_unitario: Decimal
+    -subtotal: Decimal
+    +calcular_subtotal(): Decimal
+    +modificar_cantidad(cantidad: int): void
+  }
+
+  class Gasto <<entity>> {
+    -id_gasto: int
+    -descripcion: str
+    -fecha: date
+    -monto: Decimal
+    +validar(): bool
+    +modificar_datos(cambios: dict): void
+  }
+
+  class ReporteResumen <<entity>> {
+    -fecha_desde: date
+    -fecha_hasta: date
+    -ingresos: Decimal
+    -egresos: Decimal
+    -balance: Decimal
+    +calcular_ingresos(ventas: list): Decimal
+    +calcular_egresos(gastos: list): Decimal
+    +calcular_balance(): Decimal
+  }
+}
+
+package "Persistencia - Repositorios" {
+  class RepositorioUsuario <<repository>> {
+    +buscar_por_nombre_usuario(nombre: str): Usuario
+    +guardar(usuario: Usuario): void
+    +actualizar(usuario: Usuario): void
+  }
+
+  class RepositorioProducto <<repository>> {
+    +guardar(producto: Producto): int
+    +buscar_por_id(id_producto: int): Producto
+    +buscar_por_nombre(nombre: str): list
+    +actualizar(producto: Producto): void
+    +existe_en_ventas(id_producto: int): bool
+  }
+
+  class RepositorioCategoria <<repository>> {
+    +guardar(categoria: Categoria): int
+    +buscar_por_id(id_categoria: int): Categoria
+    +buscar_por_nombre(nombre: str): list
+    +actualizar(categoria: Categoria): void
+  }
+
+  class RepositorioVenta <<repository>> {
+    +guardar(venta: Venta): int
+    +buscar_por_periodo(desde: date, hasta: date): list
+  }
+
+  class RepositorioGasto <<repository>> {
+    +guardar(gasto: Gasto): int
+    +buscar_por_periodo(desde: date, hasta: date): list
+  }
+
+  class UnidadDeTrabajo <<service>> {
+    +iniciar_transaccion(): void
+    +confirmar(): void
+    +revertir(): void
+  }
+}
+
+' Herencia de usuarios
+Usuario <|-- AdministradorSistema
+Usuario <|-- TrabajadorNegocio
+
+' Relaciones del negocio y ubicacion
+Negocio "1" -- "0..*" AdministradorSistema : administra
+Negocio "1" -- "0..*" TrabajadorNegocio : emplea
+Negocio "1" -- "0..*" Categoria : organiza
+Negocio "0..*" --> "1" Localidad : se encuentra en
+Localidad "0..*" --> "1" Provincia : pertenece a
+
+' Catalogo
+Categoria "1" -- "0..*" Producto : contiene
+Negocio "1" -- "0..*" Producto : comercializa
+
+' Ventas
+Usuario "1" <-- "0..*" Venta : registrada por
+Venta "1" *-- "1..*" DetalleVenta : incluye
+DetalleVenta "0..*" --> "1" Producto : corresponde a
+
+' Gastos y reportes
+Negocio "1" -- "0..*" Gasto : registra
+ReporteResumen ..> RepositorioVenta : consulta
+ReporteResumen ..> RepositorioGasto : consulta
+
+' Boundary a controladores
+PantallaProducto --> ControladorProducto
+PantallaVenta --> ControladorVenta
+PantallaGastos --> ControladorGasto
+PantallaMenu --> ControladorReporte
+PantallaMenu --> ControladorCategoria
+PantallaMenu --> ControladorAutenticacion
+
+' Controladores a repositorios y unidad de trabajo
+ControladorAutenticacion --> RepositorioUsuario
+ControladorProducto --> RepositorioProducto
+ControladorProducto --> RepositorioCategoria
+ControladorCategoria --> RepositorioCategoria
+ControladorVenta --> RepositorioVenta
+ControladorVenta --> RepositorioProducto
+ControladorVenta --> UnidadDeTrabajo
+ControladorGasto --> RepositorioGasto
+ControladorReporte --> RepositorioVenta
+ControladorReporte --> RepositorioGasto
+
+note right of Producto
+  stock_minimo y activo se proponen
+  para modelar la alerta de stock bajo
+  y la baja logica del producto.
+  Si se adoptan, deben agregarse
+  tambien al modelo de MySQL.
+end note
+
+note bottom of RepositorioProducto
+  La capa de persistencia traduce
+  objetos del dominio a registros
+  de MySQL y viceversa.
+end note
+@enduml

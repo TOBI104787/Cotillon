@@ -1,0 +1,89 @@
+@startuml
+title Sistema de Gestion para un Cotillon - DSD: Registrar Venta
+autonumber
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+
+actor "Empleado o responsable\ndel negocio" as Empleado
+boundary "pantalla: PantallaVenta" as Pantalla
+control "controlador: ControladorVenta" as Controlador
+database "repoProducto: RepositorioProducto" as RepoProducto
+entity "producto: Producto" as Producto
+entity "venta: Venta" as Venta
+entity "detalle: DetalleVenta" as Detalle
+database "repoVenta: RepositorioVenta" as RepoVenta
+control "unidad: UnidadDeTrabajo" as Unidad
+
+note over Empleado, Pantalla
+  Precondicion: el empleado o responsable
+  tiene la sesion iniciada.
+end note
+
+Empleado -> Pantalla : iniciar_venta()
+Pantalla -> Controlador : crear_venta(usuario)
+activate Controlador
+Controlador -> Venta : crear(usuario, fecha_actual)
+Venta --> Controlador : venta_en_preparacion
+Controlador --> Pantalla : mostrar_venta(venta)
+
+loop [por cada producto que se desea agregar]
+  Empleado -> Pantalla : agregar_producto(nombre, cantidad)
+  Pantalla -> Controlador : agregar_producto(venta, nombre, cantidad)
+  Controlador -> RepoProducto : buscar_por_nombre(nombre)
+  RepoProducto --> Controlador : producto
+
+  alt [producto no encontrado]
+    Controlador --> Pantalla : informar_producto_inexistente()
+    Pantalla --> Empleado : mostrar_error_producto()
+  else [producto encontrado]
+    Controlador -> Producto : hay_stock(cantidad)
+    Producto --> Controlador : stock_disponible
+
+    alt [stock suficiente]
+      Controlador -> Detalle : crear(producto, cantidad, precio_actual)
+      Detalle -> Detalle : calcular_subtotal()
+      Controlador -> Venta : agregar_detalle(detalle)
+      Venta --> Controlador : detalle_agregado
+      Controlador --> Pantalla : mostrar_descripcion_y_subtotal()
+      Pantalla --> Empleado : actualizar_carrito()
+    else [stock insuficiente]
+      Controlador --> Pantalla : informar_stock_insuficiente()
+      Pantalla --> Empleado : solicitar_ajuste_de_cantidad()
+    end
+  end
+end
+
+Empleado -> Pantalla : finalizar_venta()
+Pantalla -> Controlador : finalizar_venta(venta)
+Controlador -> Venta : validar()
+Venta --> Controlador : venta_valida
+alt [venta sin detalles]
+  Controlador --> Pantalla : informar_venta_vacia()
+  Pantalla --> Empleado : solicitar_al_menos_un_producto()
+else [venta con al menos un detalle]
+  Controlador -> Venta : calcular_total()
+  Venta --> Controlador : total
+  Controlador --> Pantalla : mostrar_total(total)
+  Pantalla --> Empleado : solicitar_confirmacion()
+
+  opt [Empleado confirma la venta]
+    Empleado -> Pantalla : confirmar_venta()
+    Pantalla -> Controlador : confirmar_venta(venta)
+    Controlador -> Unidad : iniciar_transaccion()
+
+    loop [por cada detalle de la venta]
+      Controlador -> RepoProducto : descontar_stock(id_producto, cantidad)
+      RepoProducto --> Controlador : stock_actualizado
+    end
+
+    Controlador -> RepoVenta : guardar(venta)
+    RepoVenta --> Controlador : id_venta
+    Controlador -> Unidad : confirmar()
+    Unidad --> Controlador : transaccion_confirmada
+    Controlador --> Pantalla : venta_registrada(id_venta)
+    Pantalla --> Empleado : mostrar_comprobante()
+  end
+end
+
+deactivate Controlador
+@enduml

@@ -1,0 +1,69 @@
+@startuml
+title Sistema de Gestion para un Cotillon - DSD: Registrar Producto
+autonumber
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+
+actor "Empleado o responsable\ndel negocio" as Empleado
+boundary "pantalla: PantallaProducto" as Pantalla
+control "controlador: ControladorProducto" as Controlador
+database "repoCategoria: RepositorioCategoria" as RepoCategoria
+entity "producto: Producto" as Producto
+database "repoProducto: RepositorioProducto" as RepoProducto
+
+note over Empleado, Pantalla
+  Precondicion: el empleado o responsable
+  tiene la sesion iniciada y existe una categoria.
+end note
+
+Empleado -> Pantalla : ingresar_datos(nombre, precio, stock, id_categoria)
+Pantalla -> Controlador : registrar_producto(datos)
+activate Controlador
+
+Controlador -> RepoCategoria : buscar_por_id(id_categoria)
+RepoCategoria --> Controlador : categoria
+
+alt [faltan datos obligatorios]
+  Controlador --> Pantalla : informar_datos_faltantes()
+  Pantalla --> Empleado : mostrar_campos_obligatorios()
+  Empleado -> Pantalla : completar_datos_faltantes(datos)
+  Pantalla -> Controlador : registrar_producto(datos_completos)
+  note right of Controlador
+    FA1: se completa la informacion
+    obligatoria y se repite la validacion.
+  end note
+else [datos completos]
+  Controlador -> Producto : validar_datos(datos)
+  Producto --> Controlador : resultado_validacion
+end
+
+alt [precio <= 0]
+  Controlador --> Pantalla : informar_precio_invalido()
+  Pantalla --> Empleado : solicitar_precio_valido()
+  Empleado -> Pantalla : ingresar_precio_valido(precio)
+  Pantalla -> Controlador : validar_precio(precio)
+  Controlador -> Producto : validar_precio(precio)
+  Producto --> Controlador : precio_valido
+  note right of Controlador
+    FA2: el usuario ingresa un precio
+    valido y el sistema vuelve a verificarlo.
+  end note
+else [precio > 0 y datos validos]
+  Controlador --> Pantalla : mostrar_resumen(datos)
+end
+
+Controlador --> Pantalla : solicitar_confirmacion()
+Pantalla --> Empleado : mostrar_confirmacion()
+opt [Empleado confirma el registro]
+  Empleado -> Pantalla : confirmar_registro()
+  Pantalla -> Controlador : confirmar_registro(datos)
+  Controlador -> Producto : crear(datos)
+  Producto --> Controlador : producto_validado
+  Controlador -> RepoProducto : guardar(producto)
+  RepoProducto --> Controlador : id_producto
+  Controlador --> Pantalla : registro_exitoso(id_producto)
+  Pantalla --> Empleado : mostrar_mensaje_exito()
+end
+
+deactivate Controlador
+@enduml

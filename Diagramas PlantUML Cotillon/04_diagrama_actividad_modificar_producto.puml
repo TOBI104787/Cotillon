@@ -1,0 +1,70 @@
+@startuml
+title Sistema de Gestion para un Cotillon - Actividad: Modificar Producto
+skinparam shadowing false
+
+start
+
+note top
+  Actor: Empleado o responsable del negocio
+  Precondicion: tiene la sesion iniciada.
+  La busqueda se realiza por el nombre del producto.
+end note
+
+|Empleado o responsable del negocio|
+:Ingresar el nombre del producto a buscar;
+
+|Sistema|
+:Enviar nombre al ControladorProducto;
+:Consultar RepositorioProducto por nombre;
+
+if (¿Se encontraron productos?) then (Si)
+  :Mostrar productos coincidentes;
+
+  |Empleado o responsable del negocio|
+  :Seleccionar el producto;
+
+  |Sistema|
+  :Mostrar los datos actuales del producto;
+
+  |Empleado o responsable del negocio|
+  :Elegir los datos que desea modificar;
+  :Ingresar los nuevos valores;
+
+  note right
+    Datos modificables:
+    - nombre
+    - precio
+    - stock
+    - categoria
+    - imagen
+  end note
+
+  |Sistema|
+  :Validar solamente los campos modificados;
+
+  if (¿Los datos son validos?) then (Si)
+    :Mostrar los cambios y solicitar confirmacion;
+
+    |Empleado o responsable del negocio|
+    :Confirmar modificacion;
+
+    |Sistema|
+    :Invocar Producto.modificar_datos(cambios);
+    :Actualizar el producto mediante RepositorioProducto;
+    :Informar que la modificacion fue exitosa;
+  else (No)
+    :Mostrar los errores de validacion;
+  endif
+
+else (No)
+  :Informar que no se encontro el producto;
+endif
+
+note bottom
+  Se modifican unicamente los datos seleccionados.
+  El identificador del producto y los datos historicos
+  guardados en ventas no deben modificarse.
+end note
+
+stop
+@enduml

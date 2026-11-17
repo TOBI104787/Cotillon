@@ -1,0 +1,44 @@
+@startuml
+title Sistema de Gestion para un Cotillon - Estados del Producto
+hide empty description
+skinparam shadowing false
+
+[*] --> Disponible : alta de producto\n[stock > stock_minimo]
+[*] --> StockBajo : alta de producto\n[0 < stock <= stock_minimo]
+[*] --> SinStock : alta de producto\n[stock == 0]
+
+state "Disponible" as Disponible
+state "Stock bajo" as StockBajo
+state "Sin stock" as SinStock
+state "Inactivo" as Inactivo
+
+Disponible --> StockBajo : venta confirmada\n[0 < stock_restante <= stock_minimo]
+Disponible --> SinStock : venta confirmada\n[stock_restante == 0]
+
+StockBajo --> Disponible : reponer stock\n[stock_nuevo > stock_minimo]
+StockBajo --> SinStock : venta confirmada\n[stock_restante == 0]
+StockBajo --> StockBajo : venta confirmada\n[0 < stock_restante <= stock_minimo]
+
+SinStock --> Disponible : reponer stock\n[stock_nuevo > stock_minimo]
+SinStock --> StockBajo : reponer stock\n[0 < stock_nuevo <= stock_minimo]
+
+Disponible --> Inactivo : desactivar producto
+StockBajo --> Inactivo : desactivar producto
+SinStock --> Inactivo : desactivar producto
+
+Inactivo --> Disponible : reactivar producto\n[stock > stock_minimo]
+Inactivo --> StockBajo : reactivar producto\n[0 < stock <= stock_minimo]
+Inactivo --> SinStock : reactivar producto\n[stock == 0]
+
+note right of StockBajo
+  El sistema debe alertar al empleado
+  cuando el stock sea menor o igual
+  al stock minimo configurado.
+end note
+
+note bottom of Inactivo
+  La baja logica permite conservar
+  productos que tengan historial
+  de ventas, sin borrarlos fisicamente.
+end note
+@enduml

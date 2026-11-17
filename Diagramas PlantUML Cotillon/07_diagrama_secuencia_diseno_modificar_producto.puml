@@ -1,0 +1,66 @@
+@startuml
+title Sistema de Gestion para un Cotillon - DSD: Modificar Producto
+autonumber
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+
+actor "Empleado o responsable\ndel negocio" as Empleado
+boundary "pantalla: PantallaProducto" as Pantalla
+control "controlador: ControladorProducto" as Controlador
+database "repoProducto: RepositorioProducto" as RepoProducto
+entity "producto: Producto" as Producto
+
+note over Empleado, Pantalla
+  Precondicion: el empleado o responsable
+  tiene la sesion iniciada.
+end note
+
+Empleado -> Pantalla : buscar_producto_por_nombre(nombre)
+Pantalla -> Controlador : buscar_producto(nombre)
+activate Controlador
+Controlador -> RepoProducto : buscar_por_nombre(nombre)
+RepoProducto --> Controlador : productos_encontrados
+
+alt [no hay coincidencias]
+  Controlador --> Pantalla : informar_sin_resultados()
+  Pantalla --> Empleado : mostrar_mensaje_sin_resultados()
+else [hay coincidencias]
+  Controlador --> Pantalla : mostrar_resultados(productos)
+  Pantalla --> Empleado : mostrar_lista_de_productos()
+  Empleado -> Pantalla : seleccionar_producto(id_producto)
+  Pantalla -> Controlador : obtener_producto(id_producto)
+  Controlador -> RepoProducto : buscar_por_id(id_producto)
+  RepoProducto --> Controlador : producto
+  Controlador --> Pantalla : mostrar_datos_actuales(producto)
+  Pantalla --> Empleado : mostrar_formulario(producto)
+
+  Empleado -> Pantalla : ingresar_cambios(nombre, precio, stock, categoria, imagen)
+  Pantalla -> Controlador : modificar_producto(id_producto, cambios)
+  Controlador -> Producto : validar_cambios(cambios)
+  Producto --> Controlador : resultado_validacion
+
+  alt [datos modificados no validos]
+    Controlador --> Pantalla : informar_errores()
+    Pantalla --> Empleado : mostrar_errores_de_validacion()
+  else [datos modificados validos]
+    Controlador --> Pantalla : solicitar_confirmacion(cambios)
+    Pantalla --> Empleado : mostrar_resumen_de_cambios()
+    opt [Empleado confirma la modificacion]
+      Empleado -> Pantalla : confirmar_modificacion()
+      Pantalla -> Controlador : confirmar_modificacion()
+      Controlador -> Producto : modificar_datos(cambios)
+      note right of Producto
+        Se actualizan unicamente los campos
+        seleccionados. Se conserva id_producto
+        y el historial de ventas.
+      end note
+      Controlador -> RepoProducto : actualizar(producto)
+      RepoProducto --> Controlador : actualizacion_exitosa
+      Controlador --> Pantalla : modificacion_exitosa()
+      Pantalla --> Empleado : mostrar_mensaje_exito()
+    end
+  end
+end
+
+deactivate Controlador
+@enduml

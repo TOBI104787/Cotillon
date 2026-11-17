@@ -1,0 +1,63 @@
+@startuml
+title Sistema de Gestion para un Cotillon - Actividad: Registrar Producto
+skinparam shadowing false
+
+start
+
+note top
+  Actor: Empleado o responsable del negocio
+  Precondicion: tiene la sesion iniciada y existe al menos una categoria.
+  Las actividades comienzan directamente con la carga de datos;
+  se omiten los pasos iniciales eliminados por la correccion docente.
+end note
+
+|Empleado o responsable del negocio|
+:Ingresar nombre, precio, stock y categoria;
+
+|Sistema|
+:Recibir los datos del producto;
+
+while (¿Faltan datos obligatorios?) is (Si)
+  :Informar los campos faltantes;
+  note right
+    FA1 - Datos faltantes.
+    Corresponde a la validacion
+    de los campos obligatorios.
+  end note
+  |Empleado o responsable del negocio|
+  :Completar los datos faltantes;
+  |Sistema|
+  :Volver a validar los campos;
+endwhile (No)
+
+while (¿El precio es menor o igual a cero?) is (Si)
+  :Informar que el precio no es valido;
+  note right
+    FA2 - Precio invalido.
+    El usuario ingresa un precio valido
+    y el sistema vuelve a verificarlo.
+  end note
+  |Empleado o responsable del negocio|
+  :Ingresar un precio valido;
+  |Sistema|
+  :Validar nuevamente el precio;
+endwhile (No)
+
+:Verificar que la categoria exista;
+if (¿Categoria valida?) then (Si)
+  :Mostrar resumen de los datos ingresados;
+  :Solicitar confirmacion al usuario;
+
+  |Empleado o responsable del negocio|
+  :Confirmar el registro;
+
+  |Sistema|
+  :Crear objeto Producto;
+  :Guardar producto mediante RepositorioProducto;
+  :Mostrar confirmacion de registro exitoso;
+else (No)
+  :Informar que debe seleccionar una categoria existente;
+endif
+
+stop
+@enduml
